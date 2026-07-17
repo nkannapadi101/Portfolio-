@@ -13,4 +13,6 @@ Skills displayed: Documentation, Replicability, GIS, Problem Scoping
 (what was the impact...) 
 
 
-#Project 4: GIS Vacant Properties in Pittsburgh 
+#Project 4: GIS Vacant Properties in Pittsburgh: Story Map Link: https://storymaps.arcgis.com/stories/efe6e286710146cea8644160ebdb3d09 
+
+
