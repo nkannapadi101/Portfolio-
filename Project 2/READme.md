@@ -2,7 +2,7 @@
  
 **Multivariable logistic regression analysis of NHIS 2024**
  
-> Insurance coverage — not race — is the dominant driver of cost-related delays in medical care.
+> Insurance coverage is the dominant driver of cost-related delays in medical care.
  
 ## Problem
  
