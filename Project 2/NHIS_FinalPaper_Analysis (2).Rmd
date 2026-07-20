@@ -1,0 +1,468 @@
+---
+title: "Determining Factors for Delaying Medical Treatment"
+author: "Nandita Kannapadi"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+subtitle: NHIS 2024 Multivariable Logistic Regression Analysis
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE,
+  fig.width = 7, fig.height = 4.5
+)
+```
+
+```{r load-packages}
+library(dplyr)
+library(ggplot2)
+library(broom)
+library(readr)
+```
+
+## Research Question
+
+Which factors — insurance coverage, race/ethnicity, or educational
+attainment — are most strongly associated with delaying medical care due
+to cost among U.S. adults? Using the 2024 National Health Interview
+Survey (NHIS) Sample Adult file, this analysis fits bivariate and
+multivariable logistic regression models to separate the independent
+contribution of each factor.
+
+## Reading the Data
+
+```{r read-data}
+# Data: NHIS 2024 Sample Adult file, downloaded from
+# https://www.cdc.gov/nchs/nhis/documentation/2024-nhis.html
+adult2024 <- read_csv("national_health_interview_survey.csv")
+
+n_raw <- nrow(adult2024)
+n_raw
+```
+
+## Cleaning: Variable-Specific Missing Value Handling
+
+`HISPALLP_A` and `EDUCP_A` use 97/98/99 for missing/non-response, while
+`MEDDL12M_A` and `NOTCOV_A` use 7/8/9. A single blanket `na.strings`
+won't work here because `EDUCP_A` also uses 8 and 9 as **valid**
+response categories (Bachelor's and Master's degree). So each variable
+is cleaned individually against its own codebook.
+
+```{r clean-missing}
+adult2024_clean <- adult2024 %>%
+  mutate(
+    HISPALLP_A = ifelse(HISPALLP_A %in% c(97, 98, 99), NA, HISPALLP_A),
+    EDUCP_A    = ifelse(EDUCP_A %in% c(97, 98, 99), NA, EDUCP_A),
+    MEDDL12M_A = ifelse(MEDDL12M_A %in% c(7, 8, 9), NA, MEDDL12M_A),
+    NOTCOV_A   = ifelse(NOTCOV_A %in% c(7, 8, 9), NA, NOTCOV_A)
+  ) %>%
+  filter(!is.na(HISPALLP_A), !is.na(EDUCP_A),
+         !is.na(MEDDL12M_A), !is.na(NOTCOV_A))
+
+n_clean <- nrow(adult2024_clean)
+n_clean
+```
+
+
+## Recoding and Restricting Categories
+
+Race/ethnicity follows the NHIS `HISPALLP_A` codebook
+(1 = Hispanic, 2 = Non-Hispanic White, 3 = Non-Hispanic Black/African
+American, 4 = Non-Hispanic Asian); smaller multi-race and AIAN
+categories (codes 5--7) are excluded. Education is restricted to High
+School, Bachelor's, Master's, and Doctoral degree holders. Rows with
+missing data on any predictor of interest or the outcome are dropped
+(complete-case analysis).
+
+```{r recode}
+adult2024_recoded <- adult2024_clean %>%
+  mutate(
+    education = case_when(
+      EDUCP_A == 4  ~ "High School Degree",
+      EDUCP_A == 8  ~ "Bachelors Degree",
+      EDUCP_A == 9  ~ "Masters Degree",
+      EDUCP_A == 10 ~ "Doctoral Degree",
+      TRUE ~ NA_character_
+    ),
+    insurance = case_when(
+      NOTCOV_A == 1 ~ "Not covered",
+      NOTCOV_A == 2 ~ "Covered",
+      TRUE ~ NA_character_
+    ),
+    race_ethnicity = case_when(
+      HISPALLP_A == 1 ~ "Hispanic",
+      HISPALLP_A == 2 ~ "White",
+      HISPALLP_A == 3 ~ "Black/African American",
+      HISPALLP_A == 4 ~ "Asian",
+      TRUE ~ NA_character_
+    ),
+    delayed_dummy = case_when(
+      MEDDL12M_A == 1 ~ 1,
+      MEDDL12M_A == 2 ~ 0,
+      TRUE ~ NA_real_
+    ),
+    income_level = case_when(
+      RATCAT_A %in% c(1, 2, 3)     ~ "Below poverty (<100%)",
+      RATCAT_A %in% c(4, 5, 6, 7)  ~ "Near poverty (100-199%)",
+      RATCAT_A %in% c(8, 9, 10, 11) ~ "Middle income (200-399%)",
+      RATCAT_A %in% c(12, 13, 14)  ~ "Higher income (400%+)",
+      TRUE ~ NA_character_
+    ),
+    income_level = factor(income_level,
+      levels = c("Below poverty (<100%)", "Near poverty (100-199%)",
+                 "Middle income (200-399%)", "Higher income (400%+)"))
+  )
+
+df_complete <- adult2024_recoded %>%
+  filter(
+    !is.na(education),
+    !is.na(insurance),
+    !is.na(race_ethnicity),
+    !is.na(delayed_dummy)
+  ) %>%
+  mutate(
+    education = factor(education,
+      levels = c("High School Degree", "Bachelors Degree",
+                 "Masters Degree", "Doctoral Degree")),
+    insurance = factor(insurance, levels = c("Covered", "Not covered")),
+    race_ethnicity = factor(race_ethnicity,
+      levels = c("White", "Black/African American", "Asian", "Hispanic"))
+  )
+
+n_final <- nrow(df_complete)
+n_final
+```
+
+The analytic sample contains 19303 adults.
+The reduction reflects the deliberate category restrictions above (not solely item nonresponse): adults outside the four education and four race/ethnicity groups are
+excluded by design.
+
+## Descriptive Analysis
+
+### Table 1: Adults by Education
+
+```{r table1}
+df_complete %>%
+  count(education, name = "Count") %>%
+  mutate(Percent = scales::percent(Count / sum(Count), accuracy = 0.1)) %>%
+  rename(Education = education) %>%
+  as.data.frame()
+```
+
+### Table 2: Adults by Race/Ethnicity
+
+```{r table2}
+df_complete %>%
+  count(race_ethnicity, name = "Count") %>%
+  mutate(Percent = scales::percent(Count / sum(Count), accuracy = 0.1)) %>%
+  rename(`Race/Ethnicity` = race_ethnicity) %>%
+  as.data.frame()
+```
+
+### Table 3: Adults by Insurance Status
+
+```{r table3}
+df_complete %>%
+  count(insurance, name = "Count") %>%
+  mutate(Percent = scales::percent(Count / sum(Count), accuracy = 0.1)) %>%
+  rename(`Insurance Status` = insurance) %>%
+  as.data.frame()
+```
+
+### Distribution Plots
+
+```{r plot-education}
+ggplot(df_complete, aes(x = education)) +
+  geom_bar(fill = "#4C72B0") +
+  labs(title = "Distribution of Education Level",
+       x = "Education", y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+```{r plot-insurance}
+ggplot(df_complete, aes(x = insurance)) +
+  geom_bar(fill = "#55A868") +
+  labs(title = "Distribution of Insurance Coverage",
+       x = "Insurance Status", y = "Count") +
+  theme_minimal()
+```
+
+```{r plot-race}
+ggplot(df_complete, aes(x = race_ethnicity)) +
+  geom_bar(fill = "#C44E52") +
+  labs(title = "Distribution of Race/Ethnicity",
+       x = "Race/Ethnicity", y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+```{r plot-income}
+ggplot(df_complete, aes(x = income_level)) +
+  geom_bar(fill = "#8172B2") +
+  labs(title = "Distribution of Income Level (Ratio of Family Income to Poverty Threshold)",
+       x = "Income Level", y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+Income is summarized here for descriptive context; it is not included in
+the regression models below, which focus on the three hypothesized
+predictors. Adding income as a covariate is a natural extension.
+
+## Proportions of Delayed Care by Group
+
+### Table 4: Delayed Care by Insurance Status
+
+```{r table4}
+df_complete %>%
+  group_by(insurance) %>%
+  summarize(n = n(), prop_delayed = mean(delayed_dummy)) %>%
+  mutate(prop_delayed = scales::percent(prop_delayed, accuracy = 0.1)) %>%
+  rename(`Insurance Status` = insurance, N = n,
+         `% Delayed Care` = prop_delayed) %>%
+  as.data.frame()
+```
+
+### Table 5: Delayed Care by Education
+
+```{r table5}
+df_complete %>%
+  group_by(education) %>%
+  summarize(n = n(), prop_delayed = mean(delayed_dummy)) %>%
+  mutate(prop_delayed = scales::percent(prop_delayed, accuracy = 0.1)) %>%
+  rename(Education = education, N = n,
+         `% Delayed Care` = prop_delayed) %>%
+  as.data.frame()
+```
+
+### Table 6: Delayed Care by Race/Ethnicity and Insurance Status
+
+```{r table6}
+df_complete %>%
+  group_by(race_ethnicity, insurance) %>%
+  summarize(n = n(),
+            prop_delayed = mean(delayed_dummy),
+            .groups = "drop") %>%
+  mutate(prop_delayed = scales::percent(prop_delayed, accuracy = 0.1)) %>%
+  rename(`Race/Ethnicity` = race_ethnicity,
+         `Insurance Status` = insurance, N = n,
+         `% Delayed Care` = prop_delayed) %>%
+  as.data.frame()
+```
+
+```{r fig-race-insurance}
+df_complete %>%
+  group_by(race_ethnicity, insurance) %>%
+  summarize(prop_delayed = mean(delayed_dummy), .groups = "drop") %>%
+  ggplot(aes(x = race_ethnicity, y = prop_delayed, fill = insurance)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title = "Delayed Medical Care by Race/Ethnicity and Insurance Status",
+    x = NULL,
+    y = "Proportion Delayed Care",
+    fill = "Insurance Status"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+```{r fig-education-insurance}
+df_complete %>%
+  group_by(education, insurance) %>%
+  summarize(prop_delayed = mean(delayed_dummy), .groups = "drop") %>%
+  ggplot(aes(x = education, y = prop_delayed, fill = insurance)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title = "Delayed Medical Care by Education and Insurance Status",
+    x = NULL,
+    y = "Proportion Delayed Care",
+    fill = "Insurance Status"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+**Descriptive takeaways.** Differences in delayed care across
+race/ethnicity groups are modest among insured adults but widen
+considerably among the uninsured, suggesting insurance coverage — not
+race/ethnicity itself — may drive much of the raw disparity. Cell sizes
+matter when reading the uninsured bars: several race-by-insurance cells
+contain fewer than 150 respondents (see Table 6), so those proportions
+carry wide uncertainty and should be interpreted cautiously. The formal
+models below test these patterns directly.
+
+## Likelihood Ratio Tests: Bivariate Models vs. Null Model
+
+Each predictor is first tested on its own against an intercept-only
+model.
+
+```{r lrt-models}
+null_model <- glm(delayed_dummy ~ 1, family = "binomial",
+                  data = df_complete)
+
+model_education_biv <- glm(delayed_dummy ~ education,
+                           family = "binomial", data = df_complete)
+model_race_biv      <- glm(delayed_dummy ~ race_ethnicity,
+                           family = "binomial", data = df_complete)
+model_insurance_biv <- glm(delayed_dummy ~ insurance,
+                           family = "binomial", data = df_complete)
+
+lr_row <- function(model, label) {
+  a <- anova(null_model, model, test = "Chisq")
+  tibble(
+    Predictor = label,
+    `Chi-sq`  = a$Deviance[2],
+    df        = a$Df[2],
+    `p-value` = format.pval(a$`Pr(>Chi)`[2], digits = 3, eps = 0.001)
+  )
+}
+
+lrt_table <- bind_rows(
+  lr_row(model_education_biv, "Education"),
+  lr_row(model_race_biv, "Race/Ethnicity"),
+  lr_row(model_insurance_biv, "Insurance")
+)
+
+# Likelihood ratio tests of each bivariate model against the null model
+lrt_table %>%
+  mutate(`Chi-sq` = round(`Chi-sq`, 2)) %>%
+  as.data.frame()
+```
+
+```{r lrt-values, include=FALSE}
+# Pull values for inline reporting
+lr_stat <- function(model) {
+  a <- anova(null_model, model, test = "Chisq")
+  p <- a$`Pr(>Chi)`[2]
+  list(chisq = a$Deviance[2],
+       p = if (p < 0.001) "p < .001" else sprintf("p = %.3f", p))
+}
+lr_edu <- lr_stat(model_education_biv)
+lr_race <- lr_stat(model_race_biv)
+lr_ins <- lr_stat(model_insurance_biv)
+```
+
+## Multivariable Logistic Regression
+
+```{r multivariate-model}
+model_multivariate <- glm(
+  delayed_dummy ~ insurance + race_ethnicity + education,
+  family = "binomial",
+  data = df_complete
+)
+
+lr_full <- lr_stat(model_multivariate)
+anova(null_model, model_multivariate, test = "Chisq")
+```
+
+```{r or-table}
+term_labels <- c(
+  "insuranceNot covered" = "Uninsured (vs. Covered)",
+  "race_ethnicityBlack/African American" =
+    "Black/African American (vs. White)",
+  "race_ethnicityAsian" = "Asian (vs. White)",
+  "race_ethnicityHispanic" = "Hispanic (vs. White)",
+  "educationBachelors Degree" = "Bachelor's (vs. High School)",
+  "educationMasters Degree" = "Master's (vs. High School)",
+  "educationDoctoral Degree" = "Doctoral (vs. High School)"
+)
+
+or_table <- tidy(model_multivariate, exponentiate = TRUE,
+                 conf.int = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(Predictor = recode(term, !!!term_labels))
+
+or_table %>%
+  transmute(
+    Predictor,
+    `Odds Ratio` = sprintf("%.2f", estimate),
+    `95% CI` = sprintf("[%.2f, %.2f]", conf.low, conf.high),
+    `p-value` = format.pval(p.value, digits = 3, eps = 0.001)
+  ) %>%
+  as.data.frame()
+```
+
+```{r inline-helpers, include=FALSE}
+# Helpers so every number reported in the text is computed from the
+# fitted model — the prose can never drift out of sync with the output.
+get_row <- function(t) filter(or_table, term == t)
+fmt_or  <- function(t) sprintf("%.2f", get_row(t)$estimate)
+fmt_ci  <- function(t) sprintf("[%.2f, %.2f]",
+                               get_row(t)$conf.low, get_row(t)$conf.high)
+fmt_p   <- function(t) {
+  p <- get_row(t)$p.value
+  if (p < 0.001) "p < .001" else sprintf("p = %.3f", p)
+}
+pct_lower <- function(t) sprintf("%.0f%%", (1 - get_row(t)$estimate) * 100)
+```
+
+## Odds Ratio Forest Plot
+
+```{r or-forest-plot}
+ggplot(or_table,
+       aes(x = reorder(Predictor, estimate), y = estimate)) +
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high),
+                  color = "#2166AC", size = 0.7) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  scale_y_log10() +
+  coord_flip() +
+  labs(
+    title = "Odds Ratios with 95% CIs from Multivariable Logistic Regression",
+    subtitle = "Outcome: Delayed medical treatment due to cost",
+    x = NULL,
+    y = "Odds Ratio (log scale)"
+  ) +
+  theme_minimal()
+```
+
+## Interpretation and Discussion
+
+**Bivariate models.** All three predictors significantly improved model
+fit over the null model. Education showed the weakest association
+($\chi^2$ = 18.66, p < .001), race/ethnicity was stronger
+($\chi^2$ = 48.97, p < .001), and insurance coverage showed the
+strongest association by far ($\chi^2$ = 472.23, p < .001).
+
+**Multivariable model.** The full model with all three predictors
+significantly improved fit over the null model
+($\chi^2$ = 527.73, p < .001).
+
+- **Insurance** was the strongest predictor: uninsured adults had about
+  6.55 times the odds of delaying care compared to insured adults
+  (95% CI [5.60, 7.65], p < .001), even after controlling for
+  race/ethnicity and education.
+- **Race/ethnicity**: after adjustment, Black/African American adults
+  (OR = 0.91, p = 0.348) and Hispanic adults (OR = 0.91, p = 0.296)
+  did not differ significantly from White adults. Asian adults were
+  the exception, with about 55% lower odds than White adults
+  (OR = 0.45, p < .001).
+- **Education**: contrary to the original hypothesis, Bachelor's degree
+  holders had higher odds of delaying care than high school graduates
+  (OR = 1.21, p = 0.005), as did Master's degree holders (OR = 1.29,
+  p = 0.002). Doctoral degree holders trended lower (OR = 0.76,
+  p = 0.067).
+**Takeaway.** Raw racial disparities in delayed care appear to be driven
+largely by unequal insurance access rather than race/ethnicity itself:
+group differences attenuate substantially once insurance and education
+are controlled for. Insurance coverage remains the most direct policy
+lever for reducing cost-related care delays.
+
+## Limitations
+
+- **Unweighted estimates.** This analysis does not apply NHIS survey
+  weights (`WTFA_A`) or account for the complex sampling design, so
+  estimates describe the analytic sample rather than the U.S. adult
+  population. A design-based extension using the `survey` package would
+  produce population-representative estimates.
+- **Complete-case analysis.** Listwise deletion and deliberate category
+  restrictions reduce the sample and could introduce selection effects
+  if missingness is not random.
+- **Cross-sectional data.** Associations are not causal; unmeasured
+  confounders such as income, health status, and geography likely
+  influence both coverage and care-seeking. Income in particular is a
+  strong candidate covariate for future model iterations.
