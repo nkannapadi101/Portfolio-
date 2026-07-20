@@ -16,7 +16,6 @@ A 12-week consulting engagement with the World Bank's climate team. Working on a
 
 **Skills:** Problem scoping · GIS & raster analysis · Suitability analysis · Documentation & replicability · Client communication
 
-📁 [Project details](./Project_1/)
 
 ## Project 2: Determining Factors for Delaying Medical Treatment
 
@@ -24,18 +23,16 @@ A semester-long analysis for my public policy analysis in R course, using the CD
 
 **Skills:** Statistical modeling & regression · R (dplyr, ggplot2, broom) · Large federal survey data · Reproducible research (R Markdown)
 
-📁 [Project details](./Project_2/)
-
 ## Project 3: Mapping Affordable Housing Potential in Pittsburgh
 
 A solo spatial analysis identifying priority areas for affordable housing by overlaying rental affordability indicators with 1,890 city-owned parcels available for sale. Kernel density estimation and bivariate overlay maps revealed that 59% of available public parcels sit in Pittsburgh's lowest-income areas — pointing to Homewood, East Hills, Beltzhoover, and Lincoln-Lemington-Belmar as priority neighborhoods.
 
 **Skills:** GIS & spatial analysis (ArcGIS) · Kernel density estimation · Spatial joins & aggregation · Open data (Census ACS, WPRDC) · Data storytelling
 
-📁 [Project details](./Project_3/) · 🗺️ [Interactive Story Map](https://storymaps.arcgis.com/stories/efe6e286710146cea8644160ebdb3d09)
+[Interactive Story Map](https://storymaps.arcgis.com/stories/efe6e286710146cea8644160ebdb3d09)
 
 ---
 
-*Nandita Kannapadi · MPPM, Carnegie Mellon University — Heinz College*
+*Nandita Kannapadi · MSPPM, Carnegie Mellon University — Heinz College*
 
 
