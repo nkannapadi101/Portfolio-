@@ -1,6 +1,6 @@
 # Determining Factors for Delaying Medical Treatment
  
-**Multivariable logistic regression analysis of NHIS 2024 · R**
+**Multivariable logistic regression analysis of NHIS 2024**
  
 > Insurance coverage — not race — is the dominant driver of cost-related delays in medical care.
  
@@ -39,7 +39,7 @@ All statistics in the written interpretation are computed inline from the fitted
 ├── NHIS_FinalPaper_Analysis.Rmd   # Full reproducible analysis
 ├── NHIS_FinalPaper_Analysis.pdf   # Knitted output
 ├── writeup/
-│   └── NHIS_Writeup.docx          # Policy writeup with discussion
+│   └── NHIS_Writeup.docx          # Policy and Analysis writeup with discussion
 └── README.md
 ```
  
@@ -55,7 +55,6 @@ All statistics in the written interpretation are computed inline from the fitted
    rmarkdown::render("NHIS_FinalPaper_Analysis.Rmd")
 ```
  
-The raw data file is not committed to this repository, per NHIS distribution practice.
  
 ## Reflection
  
