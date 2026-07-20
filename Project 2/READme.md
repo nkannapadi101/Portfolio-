@@ -38,8 +38,7 @@ All statistics in the written interpretation are computed inline from the fitted
 ```
 ├── NHIS_FinalPaper_Analysis.Rmd   # Full reproducible analysis
 ├── NHIS_FinalPaper_Analysis.pdf   # Knitted output
-├── writeup/
-│   └── NHIS_Writeup.docx          # Policy and Analysis writeup with discussion
+├── NHIS_Writeup.docx              # Policy and Analysis writeup with discussion
 └── README.md
 ```
  
