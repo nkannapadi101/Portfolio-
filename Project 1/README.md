@@ -1,6 +1,6 @@
 # Spatial Analysis for World Bank Urban Heat Management
  
-**GIS & remote sensing analysis for the 3-30-300 urban greening framework · Nairobi, Kenya**
+**GIS analysis for the 3-30-300 urban greening framework · Nairobi, Kenya**
  
 **Client:** The World Bank Economic Group
  
@@ -17,7 +17,7 @@ Our deliverables were threefold:
 1. **Technical manual** so cities can reproduce our analysis with their own data
 2. **Interactive dashboard** so analysts can communicate findings to local policymakers
 3. **Report**  so future teams can build upon this work
-We piloted the analysis in Nairobi, Kenya, and handed off the methodology to subsequent teams who are extending it to additional cities.
+Our team piloted the analysis in Nairobi, Kenya, and handed off the methodology to subsequent teams who are extending it to additional cities.
  
 ## Methodology
  
