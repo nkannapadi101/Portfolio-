@@ -1,6 +1,6 @@
 # Portfolio
 
-Projects from my Master of Public Policy and Management at Carnegie Mellon University's Heinz College, highlighting policy analysis, data analysis, and visualization — with a focus on turning data into decisions.
+My projects from my Master of Public Policy and Management at Carnegie Mellon University's Heinz College, highlighting policy analysis, data analysis, and visualization.
 
 | Project | Domain | Core Methods |
 |---|---|---|
@@ -12,20 +12,20 @@ Projects from my Master of Public Policy and Management at Carnegie Mellon Unive
 
 ## Project 1: CMU Capstone Consulting Project with the World Bank Group
 
-A 12-week consulting engagement with the World Bank's climate team. Working on a 5-person team, we scoped the client's problem — helping cities implement 3-30-300 heat mitigation with attention to social vulnerability — and delivered a technical manual, dashboard, and report designed for handoff to other city teams. I selected vulnerability indicators, conducted the raster spatial analysis and rank suitability analysis for Nairobi, and communicated findings to nontechnical audiences.
+A 12-week consulting engagement with the World Bank's climate team. Working on a 5-person team, we scoped the client's problem by helping cities implement 3-30-300 heat mitigation with attention to social vulnerability. We delivered a technical manual, dashboard, and report designed for handoff to other city teams. I selected vulnerability indicators, conducted the raster spatial analysis and rank suitability analysis for Nairobi, and communicated findings to nontechnical audiences.
 
 **Skills:** Problem scoping · GIS & raster analysis · Suitability analysis · Documentation & replicability · Client communication
 
 
 ## Project 2: Determining Factors for Delaying Medical Treatment
 
-A semester-long analysis for my public policy analysis in R course, using the CDC's 2024 National Health Interview Survey (n = 19,303). I built a reproducible R Markdown pipeline — codebook-driven cleaning, likelihood ratio tests, and multivariable logistic regression — showing that insurance coverage, not race, is the dominant driver of cost-related delays in medical care (uninsured adults have 6.55× the odds of delaying care).
+A semester-long analysis for my public policy analysis in R course, using the CDC's 2024 National Health Interview Survey (n = 19,303). I built a reproducible R Markdown pipeline by cleaning the large dataset, exploratory data analysis, likelihood ratio tests, and multivariable logistic regression. My findings showed that insurance coverage, not race, is the dominant driver of cost-related delays in medical care (uninsured adults have 6.55× the odds of delaying care).
 
-**Skills:** Statistical modeling & regression · R (dplyr, ggplot2, broom) · Large federal survey data · Reproducible research (R Markdown)
+**Skills:** Statistical modeling & regression · R (dplyr, ggplot2) · Large federal survey data · Reproducible research
 
 ## Project 3: Mapping Affordable Housing Potential in Pittsburgh
 
-A solo spatial analysis identifying priority areas for affordable housing by overlaying rental affordability indicators with 1,890 city-owned parcels available for sale. Kernel density estimation and bivariate overlay maps revealed that 59% of available public parcels sit in Pittsburgh's lowest-income areas — pointing to Homewood, East Hills, Beltzhoover, and Lincoln-Lemington-Belmar as priority neighborhoods.
+A solo spatial analysis identifying priority areas for affordable housing by overlaying rental affordability indicators with 1,890 city-owned parcels available for sale. Kernel density estimation and bivariate overlay maps revealed that 59% of available public parcels sit in Pittsburgh's lowest-income areas. My findings show that Homewood, East Hills, Beltzhoover, and Lincoln-Lemington-Belmar should be priority neighborhoods.
 
 **Skills:** GIS & spatial analysis (ArcGIS) · Kernel density estimation · Spatial joins & aggregation · Open data (Census ACS, WPRDC) · Data storytelling
 
