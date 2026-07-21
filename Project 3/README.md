@@ -2,7 +2,7 @@
 
 **Spatial analysis of housing affordability and city-owned parcels · ArcGIS, U.S. Census ACS, WPRDC open data**
 
-> The places that need the most help are also where the city has the most land to rebuild. 59% of available city-owned parcels sit in Pittsburgh's lowest-income areas.
+> The places that need the most help are also where the city has the most land to rebuild. 59% of available city-owned parcels sit in Pittsburgh's lowest-income areas. 
 
 ## Problem
 
