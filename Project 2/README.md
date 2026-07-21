@@ -6,7 +6,7 @@
  
 ## Problem
  
-Many U.S. adults delay medical care due to cost, and raw statistics show higher delay rates among minority and uninsured adults. But race, insurance, and education are entangled — policymakers need to know which lever actually matters. This project uses multivariable logistic regression to separate their independent effects.
+Many U.S. adults delay medical care due to cost, and raw statistics show higher delay rates among minority and uninsured adults. But race, insurance, and education are entangled. This project uses multivariable logistic regression to separate their independent effects.
  
 ## Methodology
  
@@ -16,7 +16,7 @@ A reproducible R Markdown pipeline built on the CDC's [2024 NHIS Sample Adult fi
 - Descriptive analysis with insurance-stratified breakdowns
 - Likelihood ratio tests comparing bivariate models to a null model
 - Multivariable logistic regression reported as adjusted odds ratios with 95% CIs
-All statistics in the written interpretation are computed inline from the fitted model objects, so the narrative can't drift from the results.
+
  
 ## Key Findings
  
@@ -30,7 +30,7 @@ All statistics in the written interpretation are computed inline from the fitted
 | Master's (vs. High School) | 1.29 | [1.10, 1.52] | .002 |
 | Doctoral (vs. High School) | 0.76 | [0.56, 1.01] | .067 |
  
-- **Insurance is overwhelmingly the strongest predictor** — uninsured adults have 6.55× the odds of delaying care.
+- **Insurance is overwhelmingly the strongest predictor** uninsured adults have 6.55× the odds of delaying care.
 - **After controlling for insurance, Black–White and Hispanic–White disparities disappear**, suggesting coverage expansion is both an access *and* equity intervention.
 - **Unexpectedly, Bachelor's and Master's degree holders delay care more** than high school graduates.
 ## Repository Structure
@@ -57,7 +57,7 @@ All statistics in the written interpretation are computed inline from the fitted
  
 ## Reflection
  
-This project taught me how to work with large federal survey datasets — navigating NHIS codebooks, handling variable-specific missing-value schemes, and managing deliberate sample restrictions across a 32,000-row file. The biggest lesson was to interrogate odd-looking statistics rather than take them at face value: a race/ethnicity distribution that didn't match known NHIS demographics led me to catch a mislabeled recode that clean-running code had hidden. To improve, I'd apply NHIS survey weights for population-representative estimates and add income and employment covariates to probe the surprising education finding.
+This project taught me how to work with large federal survey datasets which included navigating NHIS codebooks, handling variable-specific missing-value schemes, and managing deliberate sample restrictions across a 32,000-row file. The biggest lesson was to interrogate odd-looking statistics rather than take them at face value: a race/ethnicity distribution that didn't match known NHIS demographics led me to catch a mislabeled recode that clean-running code had hidden. To improve, I'd apply NHIS survey weights for population-representative estimates and add income and employment covariates to probe the surprising education finding.
  
 ## Limitations
  
