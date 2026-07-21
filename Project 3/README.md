@@ -6,7 +6,7 @@
 
 ## Problem
 
-Pittsburgh holds over 12,700 parcels of publicly owned land — much of it vacant, deteriorating, and off the tax rolls while residents across the city face rising housing cost burdens. If the city knew *which* parcels sit where affordable housing is needed most, public land could become a direct pipeline for equitable development. This project identifies priority areas for affordable rental housing by overlaying neighborhood-level affordability indicators with the spatial distribution of city-owned parcels currently available for sale.
+Pittsburgh holds over 12,700 parcels of publicly owned land. Much of the area is vacant, deteriorating, and off the tax rolls while residents across the city face rising housing cost burdens. If the city knew *which* parcels sit where affordable housing is needed most, public land could become a direct pipeline for equitable development. This project identifies priority areas for affordable rental housing by overlaying neighborhood-level affordability indicators with the spatial distribution of city-owned parcels currently available for sale.
 
 ## Methodology
 
