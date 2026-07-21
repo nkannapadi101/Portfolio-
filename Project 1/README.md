@@ -8,7 +8,7 @@
  
 ## Problem
  
-Extreme urban heat is intensifying with climate change, and its burden falls unevenly: the urban heat island effect concentrates in neighborhoods that are often also the most socially vulnerable. The 3-30-300 framework (3 visible trees from every home, 30% neighborhood canopy cover, green space within 300m) gives cities a concrete greening target — but implementing it requires spatial analysis capacity that many cities lack. This project helps cities operationalize 3-30-300 heat mitigation with explicit attention to social vulnerability, empowering planners and advocates with varying degrees of data access to champion climate mitigation in their communities.
+Extreme urban heat is intensifying with climate change, and its burden falls unevenly: the urban heat island effect concentrates in neighborhoods that are often also the most socially vulnerable. The 3-30-300 framework (3 visible trees from every home, 30% neighborhood canopy cover, green space within 300m) gives cities a concrete greening target. However, implementing it requires spatial analysis capacity that many cities lack. This project helps cities operationalize 3-30-300 heat mitigation with explicit attention to social vulnerability, empowering planners and advocates with varying degrees of data access to champion climate mitigation in their communities.
  
 ## Solution
  
